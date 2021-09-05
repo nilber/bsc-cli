@@ -13,7 +13,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/params"
 )
 
 type Block struct {
@@ -179,141 +178,141 @@ func (t *Transactions) ContractCheckDetail(log types.Log, pending bool) (*Transa
 	return txRaw, nil
 }
 
-func (t *Transactions) GetBlockNative(from int64, to int64) ([]*Transaction, error) {
+// func (t *Transactions) GetBlockNative(from int64, to int64) ([]*Transaction, error) {
 
-	header, err := t.client.HeaderByNumber(context.Background(), nil)
-	if err != nil {
-		return nil, err
-	}
-	var transactions []*Transaction
-	for i := from; i < to; i++ {
-		block, err := t.client.BlockByNumber(context.Background(), big.NewInt(i))
-		if err != nil {
-			continue
-		}
-		transactionsIn, _ := t.ProcessTransations(block.Transactions(), header.Number.Uint64())
-		transactions = append(transactions, transactionsIn...)
-	}
+// 	header, err := t.client.HeaderByNumber(context.Background(), nil)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	var transactions []*Transaction
+// 	for i := from; i < to; i++ {
+// 		block, err := t.client.BlockByNumber(context.Background(), big.NewInt(i))
+// 		if err != nil {
+// 			continue
+// 		}
+// 		transactionsIn, _ := t.ProcessTransations(block.Transactions(), header.Number.Uint64())
+// 		transactions = append(transactions, transactionsIn...)
+// 	}
 
-	return transactions, nil
-}
+// 	return transactions, nil
+// }
 
-func (t *Transactions) GetBlockNativeByBlock(blockNumber int64) ([]*Transaction, error) {
-	header, err := t.client.HeaderByNumber(context.Background(), nil)
-	if err != nil {
-		return nil, err
-	}
-	var transactions []*Transaction
-	block, err := t.client.BlockByNumber(context.Background(), big.NewInt(blockNumber))
-	if err != nil {
-		return nil, err
-	}
-	transactions, _ = t.ProcessTransations(block.Transactions(), header.Number.Uint64())
-	return transactions, nil
-}
+// func (t *Transactions) GetBlockNativeByBlock(blockNumber int64) ([]*Transaction, error) {
+// 	header, err := t.client.HeaderByNumber(context.Background(), nil)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	var transactions []*Transaction
+// 	block, err := t.client.BlockByNumber(context.Background(), big.NewInt(blockNumber))
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	transactions, _ = t.ProcessTransations(block.Transactions(), header.Number.Uint64())
+// 	return transactions, nil
+// }
 
-func (t *Transactions) ProcessTransations(txs types.Transactions, blockNumber uint64) ([]*Transaction, error) {
-	var transactions []*Transaction
-	for _, tx := range txs {
-		if tx.Value().Int64() > 0 {
-			receipt, err := t.client.TransactionReceipt(context.Background(), tx.Hash())
-			if err != nil {
-				continue
-			}
+// func (t *Transactions) ProcessTransations(txs types.Transactions, blockNumber uint64) ([]*Transaction, error) {
+// 	var transactions []*Transaction
+// 	for _, tx := range txs {
+// 		if tx.Value().Int64() > 0 {
+// 			receipt, err := t.client.TransactionReceipt(context.Background(), tx.Hash())
+// 			if err != nil {
+// 				continue
+// 			}
 
-			chainID, err := t.client.NetworkID(context.Background())
-			if err != nil {
-				continue
-			}
+// 			chainID, err := t.client.NetworkID(context.Background())
+// 			if err != nil {
+// 				continue
+// 			}
 
-			msg, err := tx.AsMessage(types.NewEIP155Signer(chainID))
-			if err != nil {
-				continue
-			}
-			var to string
-			if tx.To() != nil {
-				to = tx.To().String()
-			}
+// 			msg, err := tx.AsMessage(types.NewEIP155Signer(chainID))
+// 			if err != nil {
+// 				continue
+// 			}
+// 			var to string
+// 			if tx.To() != nil {
+// 				to = tx.To().String()
+// 			}
 
-			confirmations := blockNumber - receipt.BlockNumber.Uint64()
-			ValueFormated, _ := weiToEther(tx.Value(), params.Ether).Float64()
-			txRaw := &Transaction{
-				Hash:          tx.Hash().String(),
-				Value:         tx.Value().String(),
-				Gas:           tx.Gas(),
-				GasPrice:      tx.GasPrice().Uint64(),
-				To:            to,
-				Nonce:         tx.Nonce(),
-				Confirmation:  int64(confirmations),
-				ValueFormated: ValueFormated,
-				Symbol:        t.NativeName,
-				From:          msg.From().Hex(),
-				Blockhash:     receipt.BlockHash.Hex(),
-				BlockIndex:    int64(receipt.BlockNumber.Uint64()),
-			}
-			if index := t.FindTransactionByID(txRaw.Hash, transactions); index > 0 {
-				transactions[index] = txRaw
-			} else {
-				transactions = append(transactions, txRaw)
-			}
+// 			confirmations := blockNumber - receipt.BlockNumber.Uint64()
+// 			ValueFormated, _ := weiToEther(tx.Value(), params.Ether).Float64()
+// 			txRaw := &Transaction{
+// 				Hash:          tx.Hash().String(),
+// 				Value:         tx.Value().String(),
+// 				Gas:           tx.Gas(),
+// 				GasPrice:      tx.GasPrice().Uint64(),
+// 				To:            to,
+// 				Nonce:         tx.Nonce(),
+// 				Confirmation:  int64(confirmations),
+// 				ValueFormated: ValueFormated,
+// 				Symbol:        t.NativeName,
+// 				From:          msg.From().Hex(),
+// 				Blockhash:     receipt.BlockHash.Hex(),
+// 				BlockIndex:    int64(receipt.BlockNumber.Uint64()),
+// 			}
+// 			if index := t.FindTransactionByID(txRaw.Hash, transactions); index > 0 {
+// 				transactions[index] = txRaw
+// 			} else {
+// 				transactions = append(transactions, txRaw)
+// 			}
 
-		}
+// 		}
 
-	}
+// 	}
 
-	return transactions, nil
-}
+// 	return transactions, nil
+// }
 
-func (t *Transactions) GetTrasactionByHex(hash string) (*Transaction, error) {
-	header, err := t.client.HeaderByNumber(context.Background(), nil)
-	if err != nil {
-		return nil, err
-	}
-	tx, _, err := t.client.TransactionByHash(context.Background(), common.HexToHash(hash))
-	if err != nil {
-		return nil, err
-	}
-	receipt, err := t.client.TransactionReceipt(context.Background(), common.HexToHash(hash))
-	if err != nil {
-		return nil, err
-	}
+// func (t *Transactions) GetTrasactionByHex(hash string) (*Transaction, error) {
+// 	header, err := t.client.HeaderByNumber(context.Background(), nil)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	tx, _, err := t.client.TransactionByHash(context.Background(), common.HexToHash(hash))
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	receipt, err := t.client.TransactionReceipt(context.Background(), common.HexToHash(hash))
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	confirmations := header.Number.Int64() - receipt.BlockNumber.Int64()
+// 	confirmations := header.Number.Int64() - receipt.BlockNumber.Int64()
 
-	ValueFormated, _ := weiToEther(tx.Value(), params.Ether).Float64()
+// 	ValueFormated, _ := weiToEther(tx.Value(), params.Ether).Float64()
 
-	var to string
-	if tx.To() != nil {
-		to = tx.To().String()
-	}
+// 	var to string
+// 	if tx.To() != nil {
+// 		to = tx.To().String()
+// 	}
 
-	chainID, err := t.client.NetworkID(context.Background())
-	if err != nil {
-		return nil, err
-	}
+// 	chainID, err := t.client.NetworkID(context.Background())
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	msg, err := tx.AsMessage(types.NewEIP155Signer(chainID))
-	if err != nil {
-		return nil, err
-	}
+// 	msg, err := tx.AsMessage(types.NewEIP155Signer(chainID))
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	txRaw := &Transaction{
-		Hash:          tx.Hash().String(),
-		Value:         tx.Value().String(),
-		Gas:           tx.Gas(),
-		GasPrice:      tx.GasPrice().Uint64(),
-		To:            to,
-		Nonce:         tx.Nonce(),
-		Confirmation:  int64(confirmations),
-		ValueFormated: ValueFormated,
-		Symbol:        t.NativeName,
-		From:          msg.From().Hex(),
-		Blockhash:     receipt.BlockHash.Hex(),
-		BlockIndex:    int64(receipt.BlockNumber.Uint64()),
-	}
+// 	txRaw := &Transaction{
+// 		Hash:          tx.Hash().String(),
+// 		Value:         tx.Value().String(),
+// 		Gas:           tx.Gas(),
+// 		GasPrice:      tx.GasPrice().Uint64(),
+// 		To:            to,
+// 		Nonce:         tx.Nonce(),
+// 		Confirmation:  int64(confirmations),
+// 		ValueFormated: ValueFormated,
+// 		Symbol:        t.NativeName,
+// 		From:          msg.From().Hex(),
+// 		Blockhash:     receipt.BlockHash.Hex(),
+// 		BlockIndex:    int64(receipt.BlockNumber.Uint64()),
+// 	}
 
-	return txRaw, nil
-}
+// 	return txRaw, nil
+// }
 
 func (t *Transactions) FindTransactionByID(hash string, txs []*Transaction) int {
 	for index, item := range txs {
