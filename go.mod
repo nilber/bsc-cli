@@ -1,4 +1,4 @@
-module github.com/nilber/eth-cli
+module nilber/ethcli
 
 go 1.16
 

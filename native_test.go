@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/ethclient"
-	ethcli "github.com/nilber/eth-cli"
+	ethcli "nilber/ethcli"
 
 	"github.com/joho/godotenv"
 )

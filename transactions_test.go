@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"testing"
 
+	ethcli "nilber/ethcli"
+
 	"github.com/ethereum/go-ethereum/ethclient"
-	ethcli "github.com/nilber/eth-cli"
 )
 
 func TestGetByBlock(t *testing.T) {

@@ -4,8 +4,9 @@ import (
 	"os"
 	"testing"
 
+	ethcli "nilber/ethcli"
+
 	"github.com/ethereum/go-ethereum/ethclient"
-	ethcli "github.com/nilber/eth-cli"
 
 	"github.com/joho/godotenv"
 )
