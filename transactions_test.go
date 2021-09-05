@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	ethcli "nilber/ethcli"
+	ethcli "github.com/nilber/bsc-cli"
 
 	"github.com/ethereum/go-ethereum/ethclient"
 )

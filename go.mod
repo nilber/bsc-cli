@@ -1,4 +1,4 @@
-module nilber/ethcli
+module github.com/nilber/bsc-cli
 
 go 1.16
 

@@ -5,7 +5,7 @@ import (
 	"math"
 	"math/big"
 
-	"nilber/ethcli/abi"
+	"github.com/nilber/bsc-cli/abi"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
