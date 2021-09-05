@@ -15,7 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	hdwallet "github.com/miguelmota/go-ethereum-hdwallet"
 
-	"github.com/nilber/ethcli/abi"
+	"github.com/nilber/eth-cli/abi"
 )
 
 //sudo apt-get install libhidapi-dev
